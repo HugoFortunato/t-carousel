@@ -24,12 +24,6 @@ export default function Home() {
           <div>Hello</div>
           <div>Hello</div>
           <div>Hello</div>
-
-          <div>Hello</div>
-          <div>Hello</div>
-          <div>Hello</div>
-          <div>Hello</div>
-          <div>Hello</div>
           <div>Hello</div>
 
           <div>Hello</div>
@@ -38,9 +32,16 @@ export default function Home() {
           <div>Hello</div>
           <div>Hello</div>
           <div>Hello</div>
+          <div>Hello</div>
 
           <div>Hello</div>
           <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+
           <div>Hello</div>
           <div>Hello</div>
           <div>Hello</div>
@@ -59,11 +60,65 @@ export default function Home() {
           <div>Hello</div>
         </SecondCarousel>
 
-        <SecondCarousel
-          position="last"
-          carouselPosition={carouselPosition}
-          backgroundColor={backgroundColor}
-        >
+        <SecondCarousel position="first" carouselPosition={carouselPosition}>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+        </SecondCarousel>
+
+        <SecondCarousel position="first" carouselPosition={carouselPosition}>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+          <div>Hello</div>
+
           <div>Hello</div>
           <div>Hello</div>
           <div>Hello</div>

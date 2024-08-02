@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Autoplay from 'embla-carousel-autoplay';
-
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Carousel,
@@ -30,11 +29,11 @@ export default function SecondCarousel({
   backgroundColor,
   children,
 }: CarouselTypes) {
-  console.log(backgroundColor, 'backgroundColor');
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
   const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [largestGroup, setLargestGroup] = React.useState<any[]>([]);
 
   const itemsPerCard = 6;
 
@@ -42,6 +41,55 @@ export default function SecondCarousel({
     React.Children.toArray(children),
     itemsPerCard
   );
+
+  // Find the largest group
+  React.useEffect(() => {
+    if (groupedChildren.length > 0) {
+      const largest = groupedChildren.reduce((prev, current) => {
+        return prev.length > current.length ? prev : current;
+      });
+      setLargestGroup(largest);
+      console.log('Largest group:', largest.length - 1);
+
+      if (
+        Math.ceil(React.Children.toArray(children).length / itemsPerCard) ===
+        currentIndex + 1
+      ) {
+        return;
+      }
+    }
+  }, [currentIndex]);
+
+  const [hasRendered, setHasRendered] = React.useState(false);
+
+  React.useEffect(() => {
+    // Marca como renderizado após a primeira renderização
+    setHasRendered(true);
+  }, []);
+
+  React.useEffect(() => {
+    // Ignora o efeito na primeira renderização
+    if (!hasRendered) return;
+
+    // Código para ser executado após a primeira renderização
+    if (largestGroup.length + 1 === currentIndex + 1) {
+      console.log('cateu');
+    }
+  }, [currentIndex]);
+
+  // console.log(largestGroup.length, 'length');
+  // console.log(currentIndex + 1, 'currentIndex');
+
+  // Find the largest group
+  // React.useEffect(() => {
+  //   if (
+  //     Math.ceil(React.Children.toArray(children).length / itemsPerCard) - 1 ===
+  //     currentIndex + 1
+  //   ) {
+  //     console.log('bateu');
+  //     setLargestGroup([]);
+  //   }
+  // }, [currentIndex, largestGroup.length]);
 
   const handleClickDot = (index: number) => {
     setCurrentIndex(index);
