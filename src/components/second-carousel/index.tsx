@@ -1,22 +1,21 @@
-import * as React from 'react';
 import Autoplay from 'embla-carousel-autoplay';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
   type CarouselApi,
 } from '@/components/ui/carousel';
+import { Children, useEffect, useState } from 'react';
 
 export type CarouselTypes = {
-  position: 'first' | 'last';
-  carouselPosition: (position: string) => void;
+  index: number;
   backgroundColor?: string;
   children: React.ReactNode;
-};
 
+  setMaxDots: (dots: number, index: number) => void;
+  handleCarouselUpdate: (index: number, currentIndex: number) => void;
+};
 function chunkArray(array: any, size: any) {
   return Array.from({ length: Math.ceil(array.length / size) }, (_, index) =>
     array.slice(index * size, index * size + size)
@@ -24,138 +23,50 @@ function chunkArray(array: any, size: any) {
 }
 
 export default function SecondCarousel({
-  position,
-  carouselPosition,
-  backgroundColor,
   children,
+  setMaxDots,
+  index,
+  handleCarouselUpdate,
 }: CarouselTypes) {
-  const [api, setApi] = React.useState<CarouselApi>();
-  const [current, setCurrent] = React.useState(0);
-  const [count, setCount] = React.useState(0);
-  const [currentIndex, setCurrentIndex] = React.useState(0);
-  const [largestGroup, setLargestGroup] = React.useState<any[]>([]);
+  const [api, setApi] = useState<CarouselApi>();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const itemsPerCard = 6;
+  const groupedChildren = chunkArray(Children.toArray(children), itemsPerCard);
 
-  const groupedChildren = chunkArray(
-    React.Children.toArray(children),
-    itemsPerCard
-  );
-
-  // Find the largest group
-  React.useEffect(() => {
-    if (groupedChildren.length > 0) {
-      const largest = groupedChildren.reduce((prev, current) => {
-        return prev.length > current.length ? prev : current;
-      });
-      setLargestGroup(largest);
-      console.log('Largest group:', largest.length - 1);
-
-      if (
-        Math.ceil(React.Children.toArray(children).length / itemsPerCard) ===
-        currentIndex + 1
-      ) {
-        return;
-      }
-    }
-  }, [currentIndex]);
-
-  const [hasRendered, setHasRendered] = React.useState(false);
-
-  React.useEffect(() => {
-    // Marca como renderizado após a primeira renderização
-    setHasRendered(true);
-  }, []);
-
-  React.useEffect(() => {
-    // Ignora o efeito na primeira renderização
-    if (!hasRendered) return;
-
-    // Código para ser executado após a primeira renderização
-    if (largestGroup.length + 1 === currentIndex + 1) {
-      console.log('cateu');
-    }
-  }, [currentIndex]);
-
-  // console.log(largestGroup.length, 'length');
-  // console.log(currentIndex + 1, 'currentIndex');
-
-  // Find the largest group
-  // React.useEffect(() => {
-  //   if (
-  //     Math.ceil(React.Children.toArray(children).length / itemsPerCard) - 1 ===
-  //     currentIndex + 1
-  //   ) {
-  //     console.log('bateu');
-  //     setLargestGroup([]);
-  //   }
-  // }, [currentIndex, largestGroup.length]);
-
-  const handleClickDot = (index: number) => {
-    setCurrentIndex(index);
+  useEffect(() => {
     if (api) {
-      api.scrollTo(index);
+      api.on('select', () => {
+        const newIndex = api.selectedScrollSnap();
+        setCurrentIndex(newIndex);
+        handleCarouselUpdate(index, newIndex);
+      });
     }
-  };
+  }, [api, handleCarouselUpdate, index]);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    setMaxDots(groupedChildren.length, index);
+  }, [groupedChildren.length, setMaxDots, index]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % groupedChildren.length);
-    }, 6000);
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [groupedChildren.length]);
-
-  React.useEffect(() => {
-    const arrLength = api?.scrollSnapList().length;
-
-    if (groupedChildren.length === currentIndex + 1) {
-      if (position === 'last') {
-        carouselPosition('last');
-      }
-    }
-
-    if (groupedChildren.length !== currentIndex + 1) {
-      carouselPosition('first');
-    }
-  }, [
-    api,
-    currentIndex,
-    groupedChildren.length,
-    current,
-    position,
-    carouselPosition,
-  ]);
-
-  React.useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
-
-    api.on('select', () => {
-      setCurrent(api.selectedScrollSnap() + 1);
-    });
-  }, [api]);
 
   return (
     <div className="flex flex-col min-h-screen items-center justify-center">
       <Carousel
         setApi={setApi}
         className="w-full max-w-xs"
-        plugins={[Autoplay({ delay: 6000 })]}
+        plugins={[Autoplay({ delay: 2000 })]}
       >
         <CarouselContent>
-          {groupedChildren.map((group, index) => (
-            <CarouselItem key={index}>
-              <Card
-                className={`h-[700px] flex items-center justify-center bg-${backgroundColor}`}
-                style={{
-                  backgroundColor: backgroundColor,
-                }}
-              >
+          {groupedChildren.map((group, dotIndex) => (
+            <CarouselItem key={dotIndex}>
+              <Card className={'h-[700px] flex items-center justify-center'}>
                 <CardContent className="flex flex-col aspect-square items-center justify-center p-6">
                   {group}
                 </CardContent>
@@ -166,11 +77,10 @@ export default function SecondCarousel({
       </Carousel>
 
       <div className="flex justify-center mt-2">
-        {groupedChildren.map((_, index) => (
+        {groupedChildren.map((_, dotIndex) => (
           <button
-            key={index}
-            className={`w-2 h-2 mx-1 rounded-full ${currentIndex === index ? 'bg-black' : 'bg-gray-300'}`}
-            onClick={() => handleClickDot(index)}
+            key={dotIndex}
+            className={`w-2 h-2 mx-1 rounded-full ${currentIndex === dotIndex ? 'bg-black' : 'bg-gray-300'}`}
           />
         ))}
       </div>
